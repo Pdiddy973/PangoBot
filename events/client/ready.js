@@ -1,3 +1,3 @@
-module.exports = () =>{
+module.exports = () => {
     console.log('MediaBot is Online')
 }
