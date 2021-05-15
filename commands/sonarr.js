@@ -1,14 +1,16 @@
 module.exports = {
     name: 'sonarr',
-    description: 'Adds Movies to Radarr Queue',
+    description: 'Adds Shows to Sonarr Queue',
     async execute(client, message, args, Discord) {
         const channel = '842850107422801941';
         const yes = '✅';
         const no = '🚫';
 
+        if (!args[0]) return message.reply("Please type in a Show Name like `!sonarr <TV Show>`")
+
         let embed = new Discord.MessageEmbed()
             .setColor('#00ccff')
-            .setTitle('Choose a team to play on!')
+            .setTitle(`Adding ${args} to Sonarr`)
             .setDescription('Choosing a team will allow you to interact with your teammates!\n\n' +
                 `${yes} For Correct\n` +
                 `${no} For Incorrect`);
@@ -22,18 +24,23 @@ module.exports = {
             if (reaction.partial) await reaction.fetch();
             if (user.bot) return;
             if (!reaction.message.guild) return;
- 
+
             if (reaction.message.channel.id == channel) {
                 if (reaction.emoji.name === yes) {
-                    console.log (`${user} has selceted Correct`)
+                    console.log(`${user} has selceted Correct`)
                 }
                 if (reaction.emoji.name === no) {
-                    console.log (`${user} has selceted Incorrect`)
+                    console.log(`${user} has selceted Incorrect`)
+                    await message.channel.messages.fetch({
+                        limit: 2
+                    }).then(messages => {
+                        message.channel.bulkDelete(messages);
+                    });
                 }
             } else {
                 return;
             }
- 
+
         });
     }
 }
