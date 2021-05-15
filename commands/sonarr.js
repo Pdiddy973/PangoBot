@@ -8,6 +8,9 @@ module.exports = {
 
         if (!args[0]) return message.reply("Please type in a Show Name like `!sonarr <TV Show>`")
 
+        const { searchMovies } = require('imdb-scraper');
+ 
+        searchMovies('star wars episode').then(response => console.log(response))
         let embed = new Discord.MessageEmbed()
             .setColor('#00ccff')
             .setTitle(`Adding ${args} to Sonarr`)
