@@ -8,9 +8,14 @@ module.exports = {
 
         if (!args[0]) return message.reply("Please type in a Show Name like `!sonarr <TV Show>`")
 
-        const { searchMovies } = require('imdb-scraper');
- 
-        searchMovies('star wars episode').then(response => console.log(response))
+        var nameToImdb = require("name-to-imdb");
+        nameToImdb(`${args}`, function (err, res, inf) {
+            //console.log(res); // "tt0121955"
+            // inf contains info on where we matched that name - e.g. metadata, or on imdb
+            // and the meta object with all the available data
+            console.log(inf);
+        })
+
         let embed = new Discord.MessageEmbed()
             .setColor('#00ccff')
             .setTitle(`Adding ${args} to Sonarr`)

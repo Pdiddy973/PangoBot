@@ -15,5 +15,11 @@
   "bugs": {
     "url": "https://github.com/Pdiddy973/MediaBot/issues"
   },
-  "homepage": "https://github.com/Pdiddy973/MediaBot#readme"
+  "homepage": "https://github.com/Pdiddy973/MediaBot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^9.0.2",
+    "fs": "0.0.1-security",
+    "name-to-imdb": "^3.0.2"
+  }
 }
