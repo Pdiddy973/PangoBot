@@ -1,3 +1,5 @@
+var nameToImdb = require("name-to-imdb");
+
 module.exports = {
     name: 'sonarr',
     description: 'Adds Shows to Sonarr Queue',
@@ -5,27 +7,23 @@ module.exports = {
         const channel = '842850107422801941';
         const yes = '✅';
         const no = '🚫';
+        const imdb_query = args.join(' ')
+        console.log(`Requested ${imdb_query}`)
 
-        if (!args[0]) return message.reply("Please type in a Show Name like `!sonarr <TV Show>`")
+        if (!imdb_query) return message.reply("please add a show to the command")
 
-        let nameToImdb = require("name-to-imdb");
-        nameToImdb(`${args}`, function (err, res, inf) {
-            let id = inf.meta.id
-            let names = inf.meta.name
-            let year = inf.meta.year
-            let type = inf.meta.type
-            let image = inf.meta.image.src
-            console.log(id)
-            console.log(names)
-            console.log(year)
-            console.log(type)
-            console.log(image)
-            //console.log(inf)
+        nameToImdb(`${imdb_query}`, function (err, res, inf) {
+            id = inf.meta.id
+            show = inf.meta.name
+            year = inf.meta.year
+            type = inf.meta.type
+            image = inf.meta.image.src
         })
         let embed = new Discord.MessageEmbed()
             .setColor('#00ccff')
-            .setTitle(`Adding  to Sonarr`)
-            .setThumbnail('https://i.imgur.com/wSTFkRM.png')
+            //.setTitle(`Adding ${show}-(${year}) to Sonarr`)
+            //.setURL(`https://www.imdb.com/title/${id}/`)
+            //.setThumbnail(`${image}`)
             .setDescription('Choosing a team will allow you to interact with your teammates!\n\n' +
                 `${yes} For Correct\n` +
                 `${no} For Incorrect`);
@@ -57,5 +55,6 @@ module.exports = {
             }
 
         });
+
     }
 }
