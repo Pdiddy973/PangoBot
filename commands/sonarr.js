@@ -13,20 +13,19 @@ module.exports = {
         if (!imdb_query) return message.reply("please add a show to the command")
 
         nameToImdb(`${imdb_query}`, function (err, res, inf) {
-            id = inf.meta.id
-            show = inf.meta.name
-            year = inf.meta.year
-            type = inf.meta.type
-            image = inf.meta.image.src
+            sonarrid = inf.meta.id
+            sonarrshow = inf.meta.name
+            sonarryear = inf.meta.year
+            sonarrtype = inf.meta.type
+            sonarrimage = inf.meta.image.src
         })
         let embed = new Discord.MessageEmbed()
             .setColor('#00ccff')
-            //.setTitle(`Adding ${show}-(${year}) to Sonarr`)
-            //.setURL(`https://www.imdb.com/title/${id}/`)
-            //.setThumbnail(`${image}`)
-            .setDescription('Choosing a team will allow you to interact with your teammates!\n\n' +
-                `${yes} For Correct\n` +
-                `${no} For Incorrect`);
+            .setTitle('Adding ${sonarrshow}-(${sonarryear}) to Sonarr')
+            .setURL('https://www.imdb.com/title/${sonarrid}/')
+            .setThumbnail('https://github.com/Sonarr/sonarr.github.io/blob/master/logo/sonarr-256.png')
+            //${sonarrimage}
+            .setDescription(`Make sure this looks correct before confirming with ${yes}\n\n`)
 
         let messageEmbed = await message.channel.send(embed);
         messageEmbed.react(yes);
@@ -41,6 +40,7 @@ module.exports = {
             if (reaction.message.channel.id == channel) {
                 if (reaction.emoji.name === yes) {
                     console.log(`${user} has selceted Correct`)
+                    console.log(`${sonarrshow}`)
                 }
                 if (reaction.emoji.name === no) {
                     console.log(`${user} has selceted Incorrect`)
