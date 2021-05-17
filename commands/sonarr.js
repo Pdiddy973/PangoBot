@@ -4,7 +4,7 @@ module.exports = {
     name: 'sonarr',
     description: 'Adds Shows to Sonarr Queue',
     async execute(client, message, args, Discord) {
-        const channel = '842850107422801941';
+        const channel = process.env.REQUEST_CHANNEL;
         const yes = '✅';
         const no = '🚫';
         const imdb_query = args.join(' ')
@@ -24,7 +24,7 @@ module.exports = {
             if (sonarrtype === 'TV series') {
                 let embed = new Discord.MessageEmbed()
                     .setColor('#00ccff')
-                    .setTitle(`Adding ${sonarrshow}-(${sonarryear}) to Sonarr`)
+                    .setTitle(`Add ${sonarrshow} - (${sonarryear}) to Sonarr`)
                     .setURL(`https://www.imdb.com/title/${sonarrid}/`)
                     .setThumbnail(`${sonarrimage}`)
                     .setDescription(`Make sure this looks correct before confirming with ${yes}\n\n`)

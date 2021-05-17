@@ -3,7 +3,7 @@ module.exports = {
     name: 'radarr',
     description: 'Adds Shows to radarr Queue',
     async execute(client, message, args, Discord) {
-        const channel = '842850107422801941';
+        const channel = process.env.REQUEST_CHANNEL;
         const yes = '✅';
         const no = '🚫';
         const imdb_query = args.join(' ')
@@ -21,7 +21,7 @@ module.exports = {
             if (radarrtype === 'feature') {
                 let embed = new Discord.MessageEmbed()
                     .setColor('#ffc231')
-                    .setTitle(`Adding ${radarrshow}-(${radarryear}) to radarr`)
+                    .setTitle(`Add ${radarrshow} - (${radarryear}) to Radarr`)
                     .setURL(`https://www.imdb.com/title/${radarrid}/`)
                     .setThumbnail(`${radarrimage}`)
                     .setDescription(`Make sure this looks correct before confirming with ${yes}\n\n`)
