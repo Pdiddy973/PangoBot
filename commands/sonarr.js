@@ -8,7 +8,6 @@ module.exports = {
         const yes = '✅';
         const no = '🚫';
         const imdb_query = args.join(' ')
-        console.log(`Requested ${imdb_query}`)
 
         if (!imdb_query) return message.reply("please add a show to the command")
 
@@ -28,7 +27,6 @@ module.exports = {
                     .setTitle(`Adding ${sonarrshow}-(${sonarryear}) to Sonarr`)
                     .setURL(`https://www.imdb.com/title/${sonarrid}/`)
                     .setThumbnail(`${sonarrimage}`)
-                    //${sonarrimage}
                     .setDescription(`Make sure this looks correct before confirming with ${yes}\n\n`)
 
                 let messageEmbed = await message.channel.send(embed);
