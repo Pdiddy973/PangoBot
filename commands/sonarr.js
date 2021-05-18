@@ -5,13 +5,14 @@ module.exports = {
     description: 'Adds Shows to Sonarr Queue',
     async execute(client, message, args, Discord) {
         const channel = process.env.REQUEST_CHANNEL;
+        const requestLog = process.env.REQUEST_LOG_CHANNEL
         const yes = '✅';
         const no = '🚫';
         const imdb_query = args.join(' ')
 
         if (!imdb_query) return message.reply("please add a show to the command")
 
-        nameToImdb(`${imdb_query}`, function (err, res, inf) {
+        nameToImdb(`${imdb_query}`, function(err, res, inf) {
             sonarrid = inf.meta.id
             sonarrshow = inf.meta.name
             sonarryear = inf.meta.year
@@ -41,8 +42,22 @@ module.exports = {
 
                     if (reaction.message.channel.id == channel) {
                         if (reaction.emoji.name === yes) {
-                            console.log(`${user} has selceted ${sonarrshow} is Correct`)
                             //sonarr api
+
+                            //log embed
+                            let logEmbed = new Discord.MessageEmbed()
+                                .setColor('#00ccff')
+                                .setTitle(`Requested ${sonarrshow} - (${sonarryear}) to Sonarr`)
+                                .setURL(`https://www.imdb.com/title/${sonarrid}/`)
+                                .setThumbnail(`${sonarrimage}`)
+                                .setDescription(`${user} has Requested ${sonarrshow}`)
+                            //if request log has a channel ID, send log
+                            if (!requestLog) {
+
+                            } else {
+                                client.channels.cache.get(requestLog).send(logEmbed);
+                            }
+
                             await message.channel.messages.fetch({
                                 limit: 2
                             }).then(messages => {
@@ -50,7 +65,6 @@ module.exports = {
                             });
                         }
                         if (reaction.emoji.name === no) {
-                            console.log(`${user} has selceted Incorrect`)
                             await message.channel.messages.fetch({
                                 limit: 2
                             }).then(messages => {
