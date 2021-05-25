@@ -25,12 +25,12 @@ module.exports = {
 
         async function callback(id, media, year, type, image) {
             const color = type === 'TV series' ? '#00ccff' : '#ffc231'
-            const process_ = type === 'TV series' ? 'Sonarr' : 'Radarr'
+            const process = type === 'TV series' ? 'Sonarr' : 'Radarr'
 
             //Confirm Embed
             const confirmEmbed = new Discord.MessageEmbed()
                 .setColor(`${color}`)
-                .setTitle(`Add ${media} - (${year}) to ${process_}`)
+                .setTitle(`Add ${media} (${year}) to ${process}`)
                 .setURL(`https://www.imdb.com/title/${id}/`)
                 .setThumbnail(`${image}`)
                 .setDescription(`Make sure this looks correct before confirming with ${yes}\n\n`)
@@ -45,11 +45,11 @@ module.exports = {
                 collector.on('collect', async (reaction, user) => {
                     //Sonarr API
                     if (type == 'TV series') {
-                        console.log('sent to sonarr')
+                        console.log(`${user} has Requested ${media} sent to ${process}`)
                     }
                     //Radarr API
                     if (type == 'feature') {
-                        console.log('sent to radarr')
+                        console.log(`${user} has Requested ${media} sent to ${process}`)
                     }
 
                     //If Request log has a channel ID, send log
@@ -57,7 +57,7 @@ module.exports = {
                         //log embed
                         const logEmbed = new Discord.MessageEmbed()
                             .setColor(`${color}`)
-                            .setTitle(`Requested ${media} - (${year}) to ${process_}`)
+                            .setTitle(`Requested ${media} (${year}) to ${process}`)
                             .setURL(`https://www.imdb.com/title/${id}/`)
                             .setThumbnail(`${image}`)
                             .setDescription(`${user} has Requested ${media}`)
