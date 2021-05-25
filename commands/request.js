@@ -4,7 +4,7 @@ module.exports = {
     name: 'request',
     description: 'Adds Shows to Sonarr Queue',
     async execute(client, message, args, Discord) {
-        const requestChannel = process.env.REQUEST_CHANNEL;
+        const requestChannel = process.env.REQUEST_CHANNEL
         const requestLog = process.env.REQUEST_LOG_CHANNEL
         const yes = '✅';
         const no = '🚫';
@@ -22,14 +22,8 @@ module.exports = {
             image = inf.meta.image.src
         })
 
-        if (type === 'TV series') {
-            var color = '#00ccff'
-            var process = 'Sonarr'
-        }
-        if (type === 'feature') {
-            var color = '#ffc231'
-            var process = 'Radarr'
-        }
+        let color = '#00ccff' ? type === 'TV series' : '#ffc231'
+        let process = 'Sonarr' ? type === 'TV series' : 'Radarr'
 
         //Confirm Embed
         let confirmEmbed = new Discord.MessageEmbed()
@@ -71,7 +65,7 @@ module.exports = {
                         console.log('sent to radarr')
                     }
                     //If Request log has a channel ID, send log
-                    if (!requestLog) {} else {
+                    if (!!requestLog) {
                         client.channels.cache.get(requestLog).send(logEmbed);
                     }
                     //Remove From Request Channel
