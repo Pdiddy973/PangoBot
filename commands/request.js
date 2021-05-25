@@ -14,77 +14,80 @@ module.exports = {
         if (!imdb_query) return message.reply("please add a show to the command")
 
         //Scrapes IMDB for data
-        nameToImdb(`${imdb_query}`, function(err, res, inf) {
-            id = inf.meta.id
-            media = inf.meta.name
-            year = inf.meta.year
-            type = inf.meta.type
-            image = inf.meta.image.src
+        nameToImdb(imdb_query, (err, res, inf) => {
+            let id = inf.meta.id
+            let media = inf.meta.name
+            let year = inf.meta.year
+            let type = inf.meta.type
+            let image = inf.meta.image.src
+            callback(id, media, year, type, image)
         })
 
-        let color = '#00ccff' ? type === 'TV series' : '#ffc231'
-        let process = 'Sonarr' ? type === 'TV series' : 'Radarr'
+        function callback(id, media, year, type, image) {
+            const color = '#00ccff' ? type === 'TV series' : '#ffc231'
+            const process_ = 'Sonarr' ? type === 'TV series' : 'Radarr'
 
-        //Confirm Embed
-        let confirmEmbed = new Discord.MessageEmbed()
-            .setColor(`${color}`)
-            .setTitle(`Add ${media} - (${year}) to ${process}`)
-            .setURL(`https://www.imdb.com/title/${id}/`)
-            .setThumbnail(`${image}`)
-            .setDescription(`Make sure this looks correct before confirming with ${yes}\n\n`)
+            //Confirm Embed
+            const confirmEmbed = new Discord.MessageEmbed()
+                .setColor(`${color}`)
+                .setTitle(`Add ${media} - (${year}) to ${process_}`)
+                .setURL(`https://www.imdb.com/title/${id}/`)
+                .setThumbnail(`${image}`)
+                .setDescription(`Make sure this looks correct before confirming with ${yes}\n\n`)
 
-        //log embed
-        let logEmbed = new Discord.MessageEmbed()
-            .setColor(`${color}`)
-            .setTitle(`Requested ${media} - (${year}) to ${process}`)
-            .setURL(`https://www.imdb.com/title/${id}/`)
-            .setThumbnail(`${image}`)
-            .setDescription(`${user} has Requested ${media}`)
+            //log embed
+            const logEmbed = new Discord.MessageEmbed()
+                .setColor(`${color}`)
+                .setTitle(`Requested ${media} - (${year}) to ${process_}`)
+                .setURL(`https://www.imdb.com/title/${id}/`)
+                .setThumbnail(`${image}`)
+                .setDescription(`${user} has Requested ${media}`)
 
-        //Send Confirm Embed and React
-        let messageEmbed = await message.channel.send(confirmEmbed);
-        messageEmbed.react(yes);
-        messageEmbed.react(no);
+            //Send Confirm Embed and React
+            const messageEmbed = await message.channel.send(confirmEmbed);
+            messageEmbed.react(yes);
+            messageEmbed.react(no);
 
-        //Run Based on Reaction
-        client.on('messageReactionAdd', async (reaction, user) => {
-            //Checks
-            if (reaction.message.partial) await reaction.message.fetch();
-            if (reaction.partial) await reaction.fetch();
-            if (user.bot) return;
-            if (!reaction.message.guild) return;
+            //Run Based on Reaction
+            client.on('messageReactionAdd', async (reaction, user) => {
+                //Checks
+                if (reaction.message.partial) await reaction.message.fetch();
+                if (reaction.partial) await reaction.fetch();
+                if (user.bot) return;
+                if (!reaction.message.guild) return;
 
-            if (reaction.message.channel.id == requestChannel) {
-                if (reaction.emoji.name === yes) {
-                    //Sonarr API
-                    if (type == 'TV series') {
-                        console.log('sent to sonarr')
+                if (reaction.message.channel.id == requestChannel) {
+                    if (reaction.emoji.name === yes) {
+                        //Sonarr API
+                        if (type == 'TV series') {
+                            console.log('sent to sonarr')
+                        }
+                        //Radarr API
+                        if (type == 'feature') {
+                            console.log('sent to radarr')
+                        }
+                        //If Request log has a channel ID, send log
+                        if (!!requestLog) {
+                            client.channels.cache.get(requestLog).send(logEmbed);
+                        }
+                        //Remove From Request Channel
+                        message.channel.messages.fetch({
+                            limit: 2
+                        }).then(messages => {
+                            message.channel.bulkDelete(messages);
+                        });
                     }
-                    //Radarr API
-                    if (type == 'feature') {
-                        console.log('sent to radarr')
+                    if (reaction.emoji.name === no) {
+                        message.channel.messages.fetch({
+                            limit: 2
+                        }).then(messages => {
+                            message.channel.bulkDelete(messages);
+                        });
                     }
-                    //If Request log has a channel ID, send log
-                    if (!!requestLog) {
-                        client.channels.cache.get(requestLog).send(logEmbed);
-                    }
-                    //Remove From Request Channel
-                    message.channel.messages.fetch({
-                        limit: 2
-                    }).then(messages => {
-                        message.channel.bulkDelete(messages);
-                    });
+                } else {
+                    return;
                 }
-                if (reaction.emoji.name === no) {
-                    message.channel.messages.fetch({
-                        limit: 2
-                    }).then(messages => {
-                        message.channel.bulkDelete(messages);
-                    });
-                }
-            } else {
-                return;
-            }
-        });
+            });
+        }
     }
 }
