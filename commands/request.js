@@ -11,7 +11,7 @@ module.exports = {
         const imdb_query = args.join(' ')
 
         //Checks to make sure args are added
-        if (!imdb_query) return message.reply("please add a show to the command")
+        if (!imdb_query) return message.reply("Please Add a Media to Look For")
 
         //Scrapes IMDB for data
         nameToImdb(imdb_query, (err, res, inf) => {
@@ -24,8 +24,8 @@ module.exports = {
         })
 
         async function callback(id, media, year, type, image) {
-            const color = '#00ccff' ? type === 'TV series' : '#ffc231'
-            const process_ = 'Sonarr' ? type === 'TV series' : 'Radarr'
+            const color = type === 'TV series' ? '#00ccff' : '#ffc231'
+            const process_ = type === 'TV series' ? 'Sonarr' : 'Radarr'
 
             //Confirm Embed
             const confirmEmbed = new Discord.MessageEmbed()
@@ -35,58 +35,58 @@ module.exports = {
                 .setThumbnail(`${image}`)
                 .setDescription(`Make sure this looks correct before confirming with ${yes}\n\n`)
 
-            //Send Confirm Embed and React
-            const messageEmbed = await message.channel.send(confirmEmbed);
-            messageEmbed.react(yes);
-            messageEmbed.react(no);
-
-            //Run Based on Reaction
-            client.on('messageReactionAdd', async (reaction, user) => {
-                //Checks
-                if (reaction.message.partial) await reaction.message.fetch();
-                if (reaction.partial) await reaction.fetch();
-                if (user.bot) return;
-                if (!reaction.message.guild) return;
-
-                if (reaction.message.channel.id == requestChannel) {
-                    if (reaction.emoji.name === yes) {
-                        //Sonarr API
-                        if (type == 'TV series') {
-                            console.log('sent to sonarr')
-                        }
-                        //Radarr API
-                        if (type == 'feature') {
-                            console.log('sent to radarr')
-                        }
-                        //If Request log has a channel ID, send log
-                        if (!!requestLog) {
-                            //log embed
-                            const logEmbed = new Discord.MessageEmbed()
-                                .setColor(`${color}`)
-                                .setTitle(`Requested ${media} - (${year}) to ${process_}`)
-                                .setURL(`https://www.imdb.com/title/${id}/`)
-                                .setThumbnail(`${image}`)
-                                .setDescription(`${user} has Requested ${media}`)
-                            client.channels.cache.get(requestLog).send(logEmbed);
-                        }
-                        //Remove From Request Channel
-                        message.channel.messages.fetch({
-                            limit: 2
-                        }).then(messages => {
-                            message.channel.bulkDelete(messages);
-                        });
+            message.channel.send(confirmEmbed).then(m => {
+                m.react(yes);
+                const filter = (reaction, user) => reaction.emoji.name === yes && user.id === message.author.id
+                const collector = m.createReactionCollector(filter, {
+                    max: 1,
+                    time: 5 * 60 * 1000
+                })
+                collector.on('collect', async (reaction, user) => {
+                    //Sonarr API
+                    if (type == 'TV series') {
+                        console.log('sent to sonarr')
                     }
-                    if (reaction.emoji.name === no) {
-                        message.channel.messages.fetch({
-                            limit: 2
-                        }).then(messages => {
-                            message.channel.bulkDelete(messages);
-                        });
+                    //Radarr API
+                    if (type == 'feature') {
+                        console.log('sent to radarr')
                     }
-                } else {
-                    return;
-                }
-            });
+
+                    //If Request log has a channel ID, send log
+                    if (!!requestLog) {
+                        //log embed
+                        const logEmbed = new Discord.MessageEmbed()
+                            .setColor(`${color}`)
+                            .setTitle(`Requested ${media} - (${year}) to ${process_}`)
+                            .setURL(`https://www.imdb.com/title/${id}/`)
+                            .setThumbnail(`${image}`)
+                            .setDescription(`${user} has Requested ${media}`)
+
+                        client.channels.cache.get(requestLog).send(logEmbed);
+                    }
+
+                    //Remove From Request Channel
+                    message.channel.messages.fetch({
+                        limit: 2
+                    }).then(messages => {
+                        message.channel.bulkDelete(messages)
+                    })
+                })
+
+                m.react(no)
+                const filter2 = (reaction, user) => reaction.emoji.name === yes && user.id === message.author.id
+                const collector2 = m.createReactionCollector(filter2, {
+                    max: 1,
+                    time: 5 * 60 * 1000
+                })
+                collector2.on('collect', async (reaction, user) => {
+                    message.channel.messages.fetch({
+                        limit: 2
+                    }).then(messages => {
+                        message.channel.bulkDelete(messages)
+                    })
+                })
+            })
         }
     }
 }
