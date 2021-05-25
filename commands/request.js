@@ -23,7 +23,7 @@ module.exports = {
             callback(id, media, year, type, image)
         })
 
-        function callback(id, media, year, type, image) {
+        async function callback(id, media, year, type, image) {
             const color = '#00ccff' ? type === 'TV series' : '#ffc231'
             const process_ = 'Sonarr' ? type === 'TV series' : 'Radarr'
 
@@ -34,14 +34,6 @@ module.exports = {
                 .setURL(`https://www.imdb.com/title/${id}/`)
                 .setThumbnail(`${image}`)
                 .setDescription(`Make sure this looks correct before confirming with ${yes}\n\n`)
-
-            //log embed
-            const logEmbed = new Discord.MessageEmbed()
-                .setColor(`${color}`)
-                .setTitle(`Requested ${media} - (${year}) to ${process_}`)
-                .setURL(`https://www.imdb.com/title/${id}/`)
-                .setThumbnail(`${image}`)
-                .setDescription(`${user} has Requested ${media}`)
 
             //Send Confirm Embed and React
             const messageEmbed = await message.channel.send(confirmEmbed);
@@ -68,6 +60,13 @@ module.exports = {
                         }
                         //If Request log has a channel ID, send log
                         if (!!requestLog) {
+                            //log embed
+                            const logEmbed = new Discord.MessageEmbed()
+                                .setColor(`${color}`)
+                                .setTitle(`Requested ${media} - (${year}) to ${process_}`)
+                                .setURL(`https://www.imdb.com/title/${id}/`)
+                                .setThumbnail(`${image}`)
+                                .setDescription(`${user} has Requested ${media}`)
                             client.channels.cache.get(requestLog).send(logEmbed);
                         }
                         //Remove From Request Channel
